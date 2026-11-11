@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import DrumMachine from './homeworks/DrumMachine/DrumMachine';
 import GrandPiano88 from './homeworks/GrandPiano88/GrandPiano88';
+import KraftonPubgVnArena from './homeworks/KraftonPubgVnArena/KraftonPubgVnArena';
 
 import './App.css';
 
@@ -12,6 +13,7 @@ const SITE_TITLE = 'Lab 03 · React 19 Studio';
 const HOMEWORKS = [
   { id: 'drum', label: 'HW1 · Drum Kit', Component: DrumMachine },
   { id: 'piano', label: 'HW2 · Grand Piano 88', Component: GrandPiano88 },
+  { id: 'pubg', label: 'HW3 · PUBG VN Arena', Component: KraftonPubgVnArena },
 ];
 
 function App() {

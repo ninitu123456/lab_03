@@ -1,0 +1,122 @@
+.pubg-arena {
+  min-height: 100vh;
+  padding: 48px 24px;
+  box-sizing: border-box;
+  color: #f4f4f5;
+  background:
+    radial-gradient(circle at 50% 0%, #3f2a08 0%, transparent 45%),
+    #09090b;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+
+.pubg-arena__header {
+  max-width: 1000px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.pubg-arena__eyebrow {
+  color: #fbbf24;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+/* Explicit color: never depend on the global light/dark h1 color. */
+.pubg-arena__header h1 {
+  margin: 12px 0;
+  color: #fafafa;
+}
+
+.pubg-arena__subtitle {
+  color: #d4d4d8;
+}
+
+.pubg-arena__disclaimer {
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.pubg-arena__panel {
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid #27272a;
+  border-radius: 16px;
+  background: rgba(24, 24, 27, 0.9);
+  text-align: start;
+}
+
+.pubg-arena__panel h2 {
+  margin: 0 0 16px;
+  color: #fafafa;
+  font-size: 1.15rem;
+}
+
+.pubg-arena__drops {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pubg-arena__drops > li {
+  display: flex;
+}
+
+.pubg-arena__drops > li > * {
+  flex: 1;
+}
+
+.pubg-arena__demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #3f3f46;
+  color: #d4d4d8;
+  font-size: 0.9rem;
+}
+
+.pubg-arena__demo h3 {
+  flex-basis: 100%;
+  margin: 0;
+  color: #e4e4e7;
+  font-size: 0.95rem;
+}
+
+.pubg-arena__demo-button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  color: #fecaca;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pubg-arena__demo-button:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .pubg-arena {
+    padding: 32px 16px;
+  }
+
+  .pubg-arena__panel {
+    padding: 16px;
+  }
+}
