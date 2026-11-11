@@ -37,6 +37,8 @@
 }
 
 .drum-machine__header h1 {
+  /* WCAG 1.4.3: explicit light color; the global h1 color is dark in light mode. */
+  color: #f8fafc;
   margin: 12px 0;
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 900;

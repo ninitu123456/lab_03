@@ -22,7 +22,7 @@ describe('DrumPad', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /kick, keyboard shortcut w/i,
+        name: /kick/i,
       }),
     ).toBeInTheDocument();
 
@@ -39,7 +39,7 @@ describe('DrumPad', () => {
     );
 
     const button = screen.getByRole('button', {
-      name: /kick, keyboard shortcut w/i,
+      name: /kick/i,
     });
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -68,11 +68,31 @@ describe('DrumPad', () => {
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: /kick, keyboard shortcut w/i,
+        name: /kick/i,
       }),
     );
 
     expect(onTrigger).toHaveBeenCalledTimes(1);
     expect(onTrigger).toHaveBeenCalledWith('kick');
+  });
+
+  it('keeps the visible text in the accessible name (WCAG 2.5.3)', () => {
+    render(
+      <DrumPad
+        pad={mockPad}
+        isActive={false}
+        onTrigger={vi.fn()}
+      />,
+    );
+
+    const button = screen.getByRole('button', { name: /kick/i });
+
+    // No aria-label overriding the visible label.
+    expect(button).not.toHaveAttribute('aria-label');
+    expect(button.textContent).toContain('KICK');
+    expect(button.textContent).toContain('Bass Drum');
+
+    // The shortcut is still announced, without replacing the name.
+    expect(button).toHaveAttribute('aria-keyshortcuts', 'W');
   });
 });

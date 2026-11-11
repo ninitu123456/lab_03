@@ -7,7 +7,10 @@ function DrumPad({ pad, isActive, onTrigger }) {
       type="button"
       className={`drum-pad ${isActive ? 'active' : ''}`}
       aria-pressed={isActive}
-      aria-label={`${pad.name}, keyboard shortcut ${pad.keyLabel}`}
+      // WCAG 2.5.3 Label in Name: the accessible name comes from the
+      // visible text ("W KICK Bass Drum"); the shortcut is exposed
+      // separately instead of overriding the name with aria-label.
+      aria-keyshortcuts={pad.keyLabel}
       onClick={() => onTrigger(pad.id)}
     >
       <span className="drum-pad__key">
