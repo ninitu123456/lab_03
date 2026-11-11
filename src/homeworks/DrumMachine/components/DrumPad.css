@@ -1,0 +1,73 @@
+
+.drum-pad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 150px;
+  padding: 20px;
+
+  color: #f8fafc;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 14px;
+
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.drum-pad:hover {
+  background: #334155;
+  border-color: #38bdf8;
+}
+
+.drum-pad:active,
+.drum-pad.active {
+  background: #0369a1;
+  border-color: #7dd3fc;
+  transform: scale(0.96);
+  box-shadow: 0 0 20px rgb(56 189 248 / 35%);
+}
+
+.drum-pad:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 4px;
+}
+
+.drum-pad__key {
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 44px;
+
+  color: #0f172a;
+  background: #facc15;
+  border-radius: 10px;
+
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.drum-pad__name {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.drum-pad__description {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drum-pad {
+    transition: none;
+  }
+}
