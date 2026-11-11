@@ -2,6 +2,7 @@
 .drum-machine {
   min-height: 100vh;
   padding: 48px 24px;
+  box-sizing: border-box;
 
   color: #f8fafc;
   background:
@@ -47,9 +48,11 @@
 }
 
 .drum-machine__studio {
+  width: 100%;
   max-width: 900px;
   margin: 40px auto;
   padding: 28px;
+  box-sizing: border-box;
 
   background: rgb(30 41 59 / 85%);
   border: 1px solid #475569;
@@ -102,36 +105,6 @@
   text-align: center;
 }
 
-.drum-machine__footer {
-  color: #64748b;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-}
-
-@media (max-width: 600px) {
-  .drum-machine {
-    padding: 32px 16px;
-  }
-
-  .drum-machine__studio {
-    margin-top: 28px;
-    padding: 18px 14px;
-  }
-
-  .drum-machine__toolbar {
-    align-items: flex-start;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-  }
-}
-
-
 /* Accessible section heading */
 .drum-machine__section-heading {
   margin: 0 0 20px;
@@ -150,7 +123,7 @@
   font-weight: 700;
 }
 
-/* Hit log container */
+/* Hit log */
 .drum-machine__hit-log {
   margin-top: 28px;
   padding-top: 20px;
@@ -193,7 +166,7 @@
 
 .drum-machine__hit-list li {
   display: grid;
-  grid-template-columns: 42px 1fr auto;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
 
@@ -217,32 +190,32 @@
 }
 
 .hit-log__name {
+  min-width: 0;
   color: #f8fafc;
   font-size: 0.9rem;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .hit-log__time {
   color: #94a3b8;
   font-size: 0.8rem;
+  white-space: nowrap;
 }
 
-@media (max-width: 375px) {
-  .drum-machine__hit-list li {
-    grid-template-columns: 36px 1fr auto;
-    gap: 8px;
-    padding: 10px 8px;
-  }
-
-  .hit-log__time {
-    font-size: 0.7rem;
-  }
+.drum-machine__footer {
+  color: #64748b;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
 }
-
 
 /* Tablet */
 @media (max-width: 768px) {
   .drum-machine {
+    padding: 24px 18px;
+  }
+
+  .drum-machine__studio {
     padding: 24px 18px;
   }
 }
@@ -251,6 +224,15 @@
 @media (max-width: 600px) {
   .drum-machine {
     padding: 20px 14px;
+  }
+
+  .drum-machine__studio {
+    margin-top: 28px;
+    padding: 18px 14px;
+  }
+
+  .drum-machine__toolbar {
+    align-items: flex-start;
   }
 
   .drum-machine__hit-log-header {
@@ -262,7 +244,7 @@
   }
 }
 
-/* Small mobile: 375px and below */
+/* Small mobile */
 @media (max-width: 375px) {
   .drum-machine {
     padding: 16px 12px;
@@ -287,3 +269,14 @@
   }
 }
 
+/* Accessibility: reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
