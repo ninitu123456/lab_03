@@ -3,24 +3,26 @@
  *
  * Polyphonic synthesizer with:
  * - Up to 8 simultaneous voices.
- * - FIFO voice stealing (oldest voice is replaced first).
+ * - FIFO voice stealing via ES6 Map insertion order (midi -> voice).
  * - ADSR envelope per voice.
+ * - Click-free exponential fade before every forced stop.
  */
 
 import { PIANO_KEY_MAP } from '../data/pianoNotes';
 import {
   DEFAULT_ADSR,
   scheduleAttackDecay,
+  scheduleFadeOut,
   scheduleRelease,
   validateEnvelope,
 } from './adsr';
 
 export const MAX_VOICES = 8;
 
-// Very short fade for stolen voices to avoid audible clicks.
-const STEAL_FADE_TIME = 0.015;
+// Click-free fade used before a voice is force-stopped (40 ms).
+export const CLICK_FREE_FADE_TIME = 0.04;
 
-// Small padding so the oscillator stops after the gain reaches 0.
+// Small padding so the oscillator stops after the gain is silent.
 const STOP_PADDING = 0.02;
 
 export class PianoAudioEngine {
@@ -35,10 +37,10 @@ export class PianoAudioEngine {
     this.audioContext = null;
     this.masterGain = null;
 
-    // A Map keeps insertion order: the first entry is always
-    // the oldest voice, which makes FIFO stealing O(1).
+    // ES6 Map preserves insertion order (FIFO):
+    // voices.keys().next().value is always the OLDEST midi note.
+    // Shape: midi -> { midi, oscillator, gain, startedAt, isReleasing }
     this.voices = new Map();
-    this.nextVoiceId = 0;
   }
 
   // 1. Create the AudioContext lazily (after a user gesture).
@@ -75,18 +77,7 @@ export class PianoAudioEngine {
     return context;
   }
 
-  // 3. Find a voice that is still held (not releasing) for a note.
-  findHeldVoice(midi) {
-    for (const voice of this.voices.values()) {
-      if (voice.midi === midi && !voice.isReleasing) {
-        return voice;
-      }
-    }
-
-    return null;
-  }
-
-  // 4. Start a note. Returns the new voice id.
+  // 3. Start a note. Returns its frequency in Hz.
   noteOn(midi, velocity = 0.8) {
     const key = PIANO_KEY_MAP.get(midi);
 
@@ -102,17 +93,16 @@ export class PianoAudioEngine {
       });
     }
 
-    // Re-triggering the same key replaces its previous voice.
-    const heldVoice = this.findHeldVoice(midi);
-
-    if (heldVoice) {
-      this.stealVoice(heldVoice);
+    // Re-triggering a key (held or still releasing) restarts it.
+    // Deleting first also moves the note to the END of the FIFO order.
+    if (this.voices.has(midi)) {
+      this.stealVoice(midi);
     }
 
-    // FIFO voice stealing: remove the oldest voices first.
+    // FIFO voice stealing: the first Map key is the oldest note.
     while (this.voices.size >= this.maxVoices) {
-      const oldestVoice = this.voices.values().next().value;
-      this.stealVoice(oldestVoice);
+      const oldestMidi = this.voices.keys().next().value;
+      this.stealVoice(oldestMidi);
     }
 
     const now = context.currentTime;
@@ -129,7 +119,6 @@ export class PianoAudioEngine {
     gain.connect(this.masterGain);
 
     const voice = {
-      id: this.nextVoiceId,
       midi,
       oscillator,
       gain,
@@ -137,25 +126,23 @@ export class PianoAudioEngine {
       isReleasing: false,
     };
 
-    this.nextVoiceId += 1;
-
     oscillator.addEventListener(
       'ended',
       () => this.cleanupVoice(voice),
       { once: true },
     );
 
-    this.voices.set(voice.id, voice);
+    this.voices.set(midi, voice);
     oscillator.start(now);
 
-    return voice.id;
+    return key.frequency;
   }
 
-  // 5. Release a note using the ADSR release stage.
+  // 4. Release a held note using the ADSR release stage.
   noteOff(midi) {
-    const voice = this.findHeldVoice(midi);
+    const voice = this.voices.get(midi);
 
-    if (!voice || !this.audioContext) {
+    if (!voice || voice.isReleasing || !this.audioContext) {
       return false;
     }
 
@@ -169,63 +156,57 @@ export class PianoAudioEngine {
     return true;
   }
 
-  // 6. Quickly fade out and remove a voice.
-  stealVoice(voice) {
+  // 5. Force-stop a voice with a click-free 40 ms exponential fade.
+  stealVoice(midi) {
+    const voice = this.voices.get(midi);
+
+    if (!voice) {
+      return;
+    }
+
     const now = this.audioContext.currentTime;
+    const fadeEnd = scheduleFadeOut(voice.gain.gain, now, CLICK_FREE_FADE_TIME);
 
-    this.voices.delete(voice.id);
-
-    scheduleRelease(voice.gain.gain, now, {
-      ...this.envelope,
-      release: STEAL_FADE_TIME,
-    });
+    this.voices.delete(midi);
 
     try {
-      voice.oscillator.stop(now + STEAL_FADE_TIME + STOP_PADDING);
+      voice.oscillator.stop(fadeEnd + STOP_PADDING);
     } catch {
       // Oscillator may already have stopped.
     }
   }
 
-  // 7. Disconnect nodes after a voice has finished.
+  // 6. Disconnect nodes after a voice has finished.
   cleanupVoice(voice) {
-    if (this.voices.get(voice.id) === voice) {
-      this.voices.delete(voice.id);
+    // Only delete if a newer voice has not replaced this midi key.
+    if (this.voices.get(voice.midi) === voice) {
+      this.voices.delete(voice.midi);
     }
 
     voice.oscillator.disconnect();
     voice.gain.disconnect();
   }
 
-  // 8. Number of voices currently producing sound.
+  // 7. Number of voices currently producing sound.
   getActiveVoiceCount() {
     return this.voices.size;
   }
 
-  // 9. MIDI notes that are currently held down.
+  // 8. MIDI notes that are currently held down (oldest first).
   getActiveNotes() {
     return [...this.voices.values()]
       .filter((voice) => !voice.isReleasing)
       .map((voice) => voice.midi);
   }
 
-  // 10. Stop every voice immediately.
+  // 9. Silence every voice (used by Stop Sequence / unmount).
   stopAll() {
-    for (const voice of this.voices.values()) {
-      try {
-        voice.oscillator.stop();
-      } catch {
-        // Oscillator may already have stopped.
-      }
-
-      voice.oscillator.disconnect();
-      voice.gain.disconnect();
+    for (const midi of [...this.voices.keys()]) {
+      this.stealVoice(midi);
     }
-
-    this.voices.clear();
   }
 
-  // 11. Release all audio resources.
+  // 10. Release all audio resources.
   async dispose() {
     this.stopAll();
 

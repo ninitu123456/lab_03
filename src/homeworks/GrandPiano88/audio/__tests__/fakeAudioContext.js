@@ -7,6 +7,7 @@ class FakeAudioParam {
       this.value = nextValue;
     });
     this.linearRampToValueAtTime = vi.fn();
+    this.exponentialRampToValueAtTime = vi.fn();
     this.cancelScheduledValues = vi.fn();
   }
 }

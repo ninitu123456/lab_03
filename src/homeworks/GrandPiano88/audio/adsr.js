@@ -67,6 +67,25 @@ export function scheduleAttackDecay(param, startTime, peak, envelope = DEFAULT_A
   return decayEnd;
 }
 
+// Exponential ramps cannot reach exactly 0, so fade to near-silence.
+export const SILENT_GAIN = 0.0001;
+
+/**
+ * Schedules a click-free exponential fade-out, used right before
+ * oscillator.stop() when a voice is stolen or force-stopped.
+ *
+ * @returns {number} Time when the fade finishes.
+ */
+export function scheduleFadeOut(param, time, duration) {
+  const endTime = time + duration;
+
+  holdCurrentValue(param, time);
+  param.exponentialRampToValueAtTime(SILENT_GAIN, endTime);
+
+  return endTime;
+}
+
+
 /**
  * Schedules the Release stage.
  *

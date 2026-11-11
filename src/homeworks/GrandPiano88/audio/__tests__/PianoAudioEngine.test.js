@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MAX_VOICES, PianoAudioEngine } from '../PianoAudioEngine';
+import {
+  CLICK_FREE_FADE_TIME,
+  MAX_VOICES,
+  PianoAudioEngine,
+} from '../PianoAudioEngine';
+
 import { FakeAudioContext } from './fakeAudioContext';
 
 // Values chosen to be exact in binary floating point.
@@ -58,6 +63,44 @@ describe('PianoAudioEngine', () => {
     expect(activeNotes).toContain(61);
     expect(activeNotes).toContain(68);
     expect(engine.audioContext.oscillators[0].stop).toHaveBeenCalled();
+  });
+    it('tracks voices in a midi-keyed Map with FIFO order', () => {
+    for (let midi = 60; midi <= 68; midi += 1) {
+      engine.noteOn(midi);
+    }
+
+    // The oldest remaining note is the first Map key.
+    expect(engine.voices.keys().next().value).toBe(61);
+    expect([...engine.voices.keys()]).toEqual([61, 62, 63, 64, 65, 66, 67, 68]);
+  });
+
+  it('fades a stolen voice out exponentially within 40 ms', () => {
+    for (let midi = 60; midi <= 68; midi += 1) {
+      engine.noteOn(midi);
+    }
+
+    // gains[1] belongs to the first (stolen) voice: midi 60.
+    const stolenGain = engine.audioContext.gains[1].gain;
+    const stolenOscillator = engine.audioContext.oscillators[0];
+
+    expect(stolenGain.exponentialRampToValueAtTime).toHaveBeenCalledWith(
+      0.0001,
+      CLICK_FREE_FADE_TIME,
+    );
+    expect(stolenOscillator.stop.mock.calls[0][0]).toBeCloseTo(0.06);
+  });
+
+  it('restarts a note that is still releasing', () => {
+    engine.noteOn(60);
+    engine.noteOff(60);
+    engine.noteOn(60);
+
+    expect(engine.getActiveVoiceCount()).toBe(1);
+    expect(engine.getActiveNotes()).toEqual([60]);
+  });
+
+  it('returns the note frequency from noteOn', () => {
+    expect(engine.noteOn(69)).toBe(440);
   });
 
   it('releases a note using the release stage', () => {

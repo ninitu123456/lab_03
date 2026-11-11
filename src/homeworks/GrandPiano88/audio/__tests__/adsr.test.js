@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { scheduleRelease, validateEnvelope } from '../adsr';
+import {
+  SILENT_GAIN,
+  scheduleFadeOut,
+  scheduleRelease,
+  validateEnvelope,
+} from '../adsr';
+
 
 describe('ADSR Envelope', () => {
   it('rejects invalid envelope values', () => {
@@ -37,5 +43,21 @@ describe('ADSR Envelope', () => {
     expect(param.cancelScheduledValues).not.toHaveBeenCalled();
     expect(param.linearRampToValueAtTime).toHaveBeenCalledWith(0, 2.5);
     expect(endTime).toBe(2.5);
+  });
+    it('schedules a click-free exponential fade-out', () => {
+    const param = {
+      value: 0.5,
+      cancelScheduledValues: vi.fn(),
+      setValueAtTime: vi.fn(),
+      exponentialRampToValueAtTime: vi.fn(),
+    };
+
+    const endTime = scheduleFadeOut(param, 1, 0.04);
+
+    // Fallback path: hold the current value, then ramp down.
+    expect(param.cancelScheduledValues).toHaveBeenCalledWith(1);
+    expect(param.setValueAtTime).toHaveBeenCalledWith(0.5, 1);
+    expect(param.exponentialRampToValueAtTime).toHaveBeenCalledWith(SILENT_GAIN, 1.04);
+    expect(endTime).toBe(1.04);
   });
 });
