@@ -1,0 +1,48 @@
+/* Base look of a single key. Positioning is done by PianoKeyboard. */
+.piano-key {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0 0.5rem;
+  border: 1px solid #1f1f1f;
+  border-radius: 0 0 0.375rem 0.375rem;
+  font: inherit;
+  font-size: 0.625rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.piano-key--white {
+  background: #fafafa;
+  color: #1f1f1f;
+}
+
+.piano-key--black {
+  background: #1f1f1f;
+  color: #fafafa;
+}
+
+/* Pressed state (also exposed to assistive tech via aria-pressed). */
+.piano-key[aria-pressed='true'].piano-key--white {
+  background: #ffd166;
+}
+
+.piano-key[aria-pressed='true'].piano-key--black {
+  background: #b5179e;
+}
+
+/* WCAG 2.4.7 / 2.4.11: clearly visible keyboard focus. */
+.piano-key:focus-visible {
+  outline: 3px solid #0057d9;
+  outline-offset: -3px;
+  position: relative;
+  z-index: 3;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .piano-key {
+    transition: background-color 60ms linear;
+  }
+}
