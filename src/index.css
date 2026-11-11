@@ -75,6 +75,9 @@ h2 {
 
 h1 {
   font-size: 56px;
+  /* Unitless: a % line-height on :root is inherited as a fixed ~26px,
+     which made wrapped 36px headings overlap (WCAG 1.4.10 / 1.4.12). */
+  line-height: 1.15;
   letter-spacing: -1.68px;
   margin: 32px 0;
   @media (max-width: 1024px) {
