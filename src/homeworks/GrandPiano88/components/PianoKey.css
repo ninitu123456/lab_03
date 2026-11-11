@@ -37,7 +37,6 @@
 .piano-key:focus-visible {
   outline: 3px solid #0057d9;
   outline-offset: -3px;
-  position: relative;
   z-index: 3;
 }
 

@@ -1,0 +1,59 @@
+/*
+ * Layout: white keys sit side by side, black keys float on top.
+ * Every key is positioned from its --white-index (set by PianoKey).
+ */
+
+/* Scrolls inside its own box, so the PAGE never scrolls horizontally. */
+.piano-keyboard__scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-block-end: 0.5rem;
+}
+
+.piano-keyboard {
+  --white-key-width: 2.25rem;
+  --white-key-height: 11rem;
+  --black-key-width: calc(var(--white-key-width) * 0.6);
+
+  position: relative;
+  width: calc(52 * var(--white-key-width));
+  height: var(--white-key-height);
+  margin-inline: auto;
+}
+
+.piano-keyboard .piano-key {
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+}
+
+.piano-keyboard .piano-key--white {
+  left: calc(var(--white-index) * var(--white-key-width));
+  width: var(--white-key-width);
+  height: 100%;
+  z-index: 1;
+}
+
+/* A black key is centered on the border after its left white key. */
+.piano-keyboard .piano-key--black {
+  left: calc(
+    (var(--white-index) + 1) * var(--white-key-width) - var(--black-key-width) / 2
+  );
+  width: var(--black-key-width);
+  height: 62%;
+  z-index: 2;
+  font-size: 0.5rem;
+}
+
+/* Focused key is drawn above its neighbours. */
+.piano-keyboard .piano-key:focus-visible {
+  z-index: 3;
+}
+
+@media (max-width: 480px) {
+  .piano-keyboard {
+    --white-key-width: 2rem;
+    --white-key-height: 9rem;
+  }
+}
