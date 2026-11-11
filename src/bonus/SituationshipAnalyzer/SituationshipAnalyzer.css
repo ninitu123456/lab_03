@@ -1,0 +1,200 @@
+.situationship {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: #fdf2f8;
+  text-align: start;
+}
+
+.situationship__phase {
+  margin: 0;
+  color: #fbcfe8;
+}
+
+.situationship__phase strong {
+  color: #fff;
+}
+
+.situationship__verdict {
+  display: block;
+  padding: 14px 16px;
+  border: 2px solid #be185d;
+  border-radius: 10px;
+  background: #3b0a24;
+  font-weight: 700;
+}
+
+/* Not color alone: the message itself starts with [RED-FLAG] / [OK]. */
+.situationship__verdict--red_flag {
+  border-color: #f87171;
+  background: #450a0a;
+  color: #fecaca;
+}
+
+.situationship__verdict--ok {
+  border-color: #4ade80;
+  background: #052e16;
+  color: #bbf7d0;
+}
+
+.situationship__verdict--exit {
+  border-color: #a1a1aa;
+  background: #27272a;
+  color: #f4f4f5;
+}
+
+.situationship__block {
+  padding: 16px;
+  border: 1px solid #831843;
+  border-radius: 12px;
+  background: rgba(80, 7, 36, 0.35);
+}
+
+.situationship__block h3 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.situationship__inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+
+.situationship__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.situationship input,
+.situationship button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.situationship input {
+  min-width: 0;
+  border: 1px solid #9d174d;
+  color: #fff;
+  background: #1f0a14;
+}
+
+.situationship input:disabled {
+  color: #d4d4d8;
+  background: #27272a;
+}
+
+.situationship input[aria-invalid='true'] {
+  border-color: #f87171;
+}
+
+.situationship button {
+  border: 0;
+  color: #500724;
+  background: #f9a8d4;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.situationship button[aria-disabled='true'] {
+  color: #d4d4d8;
+  background: #3f3f46;
+  cursor: not-allowed;
+}
+
+.situationship input:focus-visible,
+.situationship button:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.situationship__hint {
+  margin: 8px 0 0;
+  color: #fbcfe8;
+  font-size: 0.85rem;
+}
+
+.situationship__hint--error {
+  color: #fecaca;
+  font-weight: 700;
+}
+
+.situationship__scores {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.situationship__scores dt {
+  color: #fbcfe8;
+  font-size: 0.85rem;
+}
+
+.situationship__scores dd {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.situationship__bar {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: #3f3f46;
+  overflow: hidden;
+}
+
+.situationship__bar > span {
+  display: block;
+  height: 100%;
+  background: #f9a8d4;
+}
+
+.situationship__bar--rival > span {
+  background: #f87171;
+}
+
+.situationship__log {
+  margin: 12px 0 0;
+  color: #fbcfe8;
+  font-size: 0.85rem;
+}
+
+.situationship__chat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.situationship__chat label {
+  flex-basis: 100%;
+}
+
+.situationship__chat input {
+  flex: 1 1 180px;
+}
+
+.situationship__chat-status {
+  display: block;
+  min-height: 1.5em;
+  margin-top: 8px;
+  color: #fbcfe8;
+}
+
+.situationship__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
