@@ -1,0 +1,65 @@
+.situationship-page {
+  min-height: 100vh;
+  padding: 48px 24px;
+  box-sizing: border-box;
+  color: #fdf2f8;
+  background:
+    radial-gradient(circle at 50% 0%, #6b0f3a 0%, transparent 45%),
+    #12040b;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+
+.situationship-page__header {
+  max-width: 900px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.situationship-page__eyebrow {
+  color: #f9a8d4;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+/* Explicit color: never depend on the global light/dark h1 color. */
+.situationship-page__header h1 {
+  margin: 12px 0;
+  color: #fff;
+}
+
+.situationship-page__subtitle {
+  color: #fbcfe8;
+}
+
+.situationship-page__panel {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid #831843;
+  border-radius: 16px;
+  background: rgba(30, 6, 18, 0.9);
+}
+
+.situationship-page__panel h2 {
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: 1.15rem;
+  text-align: start;
+}
+
+@media (max-width: 480px) {
+  .situationship-page {
+    padding: 32px 16px;
+  }
+
+  .situationship-page__panel {
+    padding: 16px;
+  }
+}

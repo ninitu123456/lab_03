@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import DrumMachine from './homeworks/DrumMachine/DrumMachine';
 import GrandPiano88 from './homeworks/GrandPiano88/GrandPiano88';
 import KraftonPubgVnArena from './homeworks/KraftonPubgVnArena/KraftonPubgVnArena';
+import SituationshipPage from './bonus/SituationshipAnalyzer/SituationshipPage';
 
 import './App.css';
 
@@ -14,6 +15,8 @@ const HOMEWORKS = [
   { id: 'drum', label: 'HW1 · Drum Kit', Component: DrumMachine },
   { id: 'piano', label: 'HW2 · Grand Piano 88', Component: GrandPiano88 },
   { id: 'pubg', label: 'HW3 · PUBG VN Arena', Component: KraftonPubgVnArena },
+  // lang="vi": screen readers pronounce the Vietnamese title correctly (WCAG 3.1.2).
+  { id: 'bonus', label: 'Bonus · Hẹn Hò Nhưng Không Yêu', lang: 'vi', Component: SituationshipPage },
 ];
 
 function App() {
@@ -39,6 +42,7 @@ function App() {
                 type="button"
                 className="app-nav__button"
                 aria-pressed={homework.id === activeId}
+                lang={homework.lang}
                 onClick={() => setActiveId(homework.id)}
               >
                 {homework.label}
