@@ -78,7 +78,7 @@ performance optimization and asynchronous systems.
 - Git history review.
 - Live refactoring defense.
 
-## 3. HW1 Git Commit Mapping
+## 3a. HW1 Git Commit Mapping
 
 | Commit | Task |
 |---|---|
@@ -93,6 +93,27 @@ performance optimization and asynchronous systems.
 | 09 | Responsive UI |
 | 10 | Testing and bug fixes |
 | 11 | AI failure audit |
+| 12 | Post-review WCAG fixes (heading contrast, label in name) |
+
+## 3b. HW2 Git Commit Mapping
+
+| Commit | Task |
+|---|---|
+| 01 | Scaffold Grand Piano module |
+| 02 | MIDI note utilities |
+| 03 | Algorithmic 88-key generation |
+| 04 | Polyphonic audio engine, ADSR, FIFO voice stealing |
+| 05 | Align voice pool with course contract (Map by midi, 40 ms fade) |
+| 06 | Memoized accessible PianoKey |
+| 07 | 88-key keyboard layout with roving focus |
+| 08 | Piano page, stable callbacks, computer keyboard input |
+| 09 | FIFO performance recorder |
+| 10 | AudioTaskQueue and abortable variable-speed replay |
+| 11 | Record / Play / Stop Sequence controls |
+| 12 | WCAG 2.2 AA fixes (focus contrast, target size, page title) |
+| 13 | React.memo render isolation tests |
+| 14 | HW2 documentation and AI failure audit |
+
 
 ## 4. Definition of Done
 

@@ -50,3 +50,27 @@ GrandPiano88/
 - Use stable props and React.memo for rendering optimization.
 - Validate functionality through automated tests.
 - Clean up audio resources and asynchronous tasks appropriately.
+
+
+## 6. Usage
+
+| Action | Input |
+|---|---|
+| Play a note | Click / touch a key, or Tab to the keyboard and press Space / Enter |
+| Move between keys | ← → Home End (one Tab stop for the whole keyboard) |
+| Computer keyboard | `A W S E D F T G Y H U J K O L` → C4 … D5 (`e.code`, works with UniKey) |
+| Record | Press **Record**, play, press **Record** again |
+| Replay | Choose 0.5x / 1x / 2x, press **Play** |
+| Cancel replay | **Stop Sequence** (or switch homework) |
+
+## 7. Verification
+
+```bash
+npm run test -- --run
+npm run lint
+npm run build
+```
+
+- Render isolation: `__tests__/GrandPiano88.renders.test.jsx` and a React commit-hook capture (`evidence/hw2-grand-piano/03-render-isolation-one-key.png`).
+- Accessibility: `__tests__/GrandPiano88.a11y.test.jsx` (axe-core) and Lighthouse 100 (`evidence/hw2-grand-piano/09-lighthouse-accessibility.png`).
+- AI issues found during development: `AI_FAILURE_AUDIT.md`, Issues 08–10.
