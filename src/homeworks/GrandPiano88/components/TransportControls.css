@@ -1,0 +1,99 @@
+.transport__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* 44px min height: comfortable touch target (WCAG 2.5.8). */
+.transport__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 1px solid #475569;
+  border-radius: 999px;
+  color: #f8fafc;
+  background: #1e293b;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.transport__button:hover:not([aria-disabled='true']) {
+  background: #334155;
+}
+
+.transport__button:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* Still focusable, but clearly unavailable. */
+.transport__button[aria-disabled='true'] {
+  color: #94a3b8;
+  background: #0f172a;
+  cursor: not-allowed;
+}
+
+.transport__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f87171;
+}
+
+.transport__button--record[aria-pressed='true'] {
+  border-color: #f87171;
+  background: #7f1d1d;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .transport__button--record[aria-pressed='true'] .transport__dot {
+    animation: transport-pulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes transport-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.transport__field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 0;
+  color: #e2e8f0;
+}
+
+.transport__field select {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  color: #f8fafc;
+  background: #1e293b;
+  font: inherit;
+}
+
+.transport__field select:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.transport__summary {
+  margin: 16px 0 0;
+  color: #cbd5e1;
+}
+
+.transport__status {
+  display: block;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #e2e8f0;
+  background: #1e293b;
+}
