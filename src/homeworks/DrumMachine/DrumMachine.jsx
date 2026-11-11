@@ -1,8 +1,6 @@
-
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { DRUM_PADS, DRUM_PAD_MAP } from './data/drumPads';
-import { getDrumPadById } from './data/drumPads';
+import { DRUM_PADS, DRUM_PAD_MAP, getDrumPadById } from './data/drumPads';
 import { DrumAudioEngine } from './audio/DrumAudioEngine';
 import { useDrumKeyboard } from './hooks/useDrumKeyboard';
 
@@ -11,21 +9,19 @@ import DrumPadGrid from './components/DrumPadGrid';
 import './DrumMachine.css';
 
 function DrumMachine() {
-  // Create one audio engine for this component instance.
   const [audioEngine] = useState(
     () => new DrumAudioEngine(),
   );
 
-  // Track the pad that was most recently triggered.
   const [activePadId, setActivePadId] = useState(null);
-
-  // Display audio errors if the browser does not support Web Audio.
   const [audioError, setAudioError] = useState('');
 
-  // Store the active timer for cleanup.
-  const activeTimerRef = useRef(null);
+  // Store the eight most recent drum hits.
+  const [hitLog, setHitLog] = useState([]);
 
-  // Trigger the corresponding drum sound.
+  const activeTimerRef = useRef(null);
+  const hitSequenceRef = useRef(0);
+
   const handleTriggerPad = useCallback(
     (padId) => {
       const pad = getDrumPadById(padId);
@@ -34,6 +30,7 @@ function DrumMachine() {
         return;
       }
 
+      // Update the visual active state.
       setActivePadId(padId);
 
       if (activeTimerRef.current !== null) {
@@ -45,6 +42,20 @@ function DrumMachine() {
         activeTimerRef.current = null;
       }, 150);
 
+      // Add a new entry to the hit log.
+      const newHit = {
+        id: ++hitSequenceRef.current,
+        name: pad.name,
+        keyLabel: pad.keyLabel,
+        time: new Date().toLocaleTimeString(),
+      };
+
+      setHitLog((previous) => [
+        newHit,
+        ...previous,
+      ].slice(0, 8));
+
+      // Play the corresponding sound.
       audioEngine.triggerPad(pad.soundType).catch(() => {
         setAudioError(
           'Unable to play audio. Please check your browser audio support.',
@@ -54,13 +65,11 @@ function DrumMachine() {
     [audioEngine],
   );
 
-  // Connect physical keyboard shortcuts.
   const { pressedPadIds } = useDrumKeyboard(
     DRUM_PAD_MAP,
     handleTriggerPad,
   );
 
-  // Release resources when the component unmounts.
   useEffect(() => {
     return () => {
       if (activeTimerRef.current !== null) {
@@ -70,6 +79,8 @@ function DrumMachine() {
       void audioEngine.dispose();
     };
   }, [audioEngine]);
+
+  const latestHit = hitLog[0];
 
   return (
     <main className="drum-machine">
@@ -87,8 +98,15 @@ function DrumMachine() {
 
       <section
         className="drum-machine__studio"
-        aria-label="Drum kit control panel"
+        aria-labelledby="drum-studio-heading"
       >
+        <h2
+          id="drum-studio-heading"
+          className="drum-machine__section-heading"
+        >
+          Drum Pad Controller
+        </h2>
+
         <div className="drum-machine__toolbar">
           <span className="drum-machine__status">
             <span
@@ -112,6 +130,7 @@ function DrumMachine() {
 
         <p className="drum-machine__instruction">
           Press W, A, S, D, J, K, L or click a pad to play.
+          Use Tab to navigate between pads.
         </p>
 
         {audioError && (
@@ -122,6 +141,55 @@ function DrumMachine() {
             {audioError}
           </p>
         )}
+
+        {/* Screen reader announcement */}
+        <output
+          className="drum-machine__live-status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {latestHit
+            ? `${latestHit.name} played`
+            : 'No drum hits yet'}
+        </output>
+
+        {/* Visual hit history */}
+        <section
+          className="drum-machine__hit-log"
+          aria-labelledby="hit-log-heading"
+        >
+          <div className="drum-machine__hit-log-header">
+            <h2 id="hit-log-heading">
+              Recent Hits
+            </h2>
+
+            <span>{hitLog.length} / 8</span>
+          </div>
+
+          {hitLog.length === 0 ? (
+            <p className="drum-machine__empty-log">
+              No hits recorded. Start playing!
+            </p>
+          ) : (
+            <ol className="drum-machine__hit-list">
+              {hitLog.map((hit) => (
+                <li key={hit.id}>
+                  <span className="hit-log__key">
+                    {hit.keyLabel}
+                  </span>
+
+                  <span className="hit-log__name">
+                    {hit.name}
+                  </span>
+
+                  <time className="hit-log__time">
+                    {hit.time}
+                  </time>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
       </section>
 
       <footer className="drum-machine__footer">

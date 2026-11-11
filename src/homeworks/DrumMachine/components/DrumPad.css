@@ -40,6 +40,7 @@
   outline-offset: 4px;
 }
 
+
 .drum-pad__key {
   display: grid;
   place-items: center;
@@ -69,5 +70,11 @@
 @media (prefers-reduced-motion: reduce) {
   .drum-pad {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .drum-pad:focus-visible {
+    outline: 3px solid Highlight;
   }
 }
