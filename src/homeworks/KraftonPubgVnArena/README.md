@@ -32,3 +32,24 @@ KraftonPubgVnArena/
 ├── components/  Crate cards, leaderboard, kill feed
 └── README.md
 ```
+
+## 4. Usage
+
+| Area | How to use it |
+|---|---|
+| Airdrops | Press **Claim** on a live drop. Stock drops at once (optimistic) and is confirmed about 0.7 s later. |
+| 409 demo | Press **Simulate rivals looting the VIP Pass**, then **Claim** the VIP Pass: the claim is rolled back. |
+| Countdown | The G-Coin crate goes live 90 s after the page opens; the standard ticket after 15 min. |
+| Leaderboard | Search a squad, sort by total / WWCD / placement / kill points, filter by minimum WWCD. |
+| Kill feed | Filter by squad (as killer or victim), weapon, or headshots only. Only the visible rows are rendered. |
+
+## 5. Verification
+
+```bash
+npm run test -- --run
+npm run lint
+npm run build
+```
+
+- Evidence screenshots: `evidence/hw3-pubg-arena/` (zero-drift freeze test, optimistic claim, 409 rollback, virtualized feed, 375 px, Lighthouse 100).
+- AI issues found during development: `AI_FAILURE_AUDIT.md`, Issues 11–13.

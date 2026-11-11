@@ -115,6 +115,23 @@ performance optimization and asynchronous systems.
 | 14 | HW2 documentation and AI failure audit |
 
 
+## 3c. HW3 Git Commit Mapping
+
+| Commit | Task |
+|---|---|
+| 01 | Scaffold KRAFTON x PUBG Vietnam Arena module |
+| 02 | Domain data, drop phases, VND formatter |
+| 03 | Zero-drift airdrop timer with visibility resync |
+| 04 | Mock claim server (409 Conflict, idempotent, abortable) |
+| 05 | Optimistic claim hook (in-flight lock, 409 rollback) |
+| 06 | Crate card with derived drop phase |
+| 07 | Pure leaderboard ranking (sort, search, WWCD filter) |
+| 08 | Accessible squad leaderboard UI |
+| 09 | Virtualized, filterable kill feed |
+| 10 | Arena page and homework navigation |
+| 11 | WCAG fixes (heading line-height) and axe audit |
+| 12 | HW3 evidence and AI failure audit |
+
 ## 4. Definition of Done
 
 A task is complete only when:

@@ -426,3 +426,131 @@ Manual contrast calculation and measuring the real layout in a browser at 375 px
 | `09-lighthouse-accessibility.png` | Lighthouse Accessibility 100 (23/23 audits) |
 
 How `03-render-isolation-one-key.png` was produced: the page was loaded with a stub of `__REACT_DEVTOOLS_GLOBAL_HOOK__`, the same hook React DevTools uses. After each commit, `onCommitFiberRoot` walks the fiber tree and marks a `PianoKey` as rendered when its props object changed (a `memo` bail-out keeps the previous props object). The application code was not modified.
+
+---
+
+# Homework 3 – KRAFTON x PUBG Vietnam Arena
+
+## 8. Identified Issues and Corrective Actions
+
+### Issue 11 – Reference Airdrop Timer Hook Failed Lint and Never Stopped
+
+**Category:** React Hooks / Timers
+
+**Found while writing:** `9c6999f`
+
+**Problem:**
+
+The `usePubgAirdropTimer` reference implementation from the HW3 contract was the starting point. Running the project's ESLint on it verbatim reported:
+
+`React Hook useEffect has a missing dependency: 'calcRemaining'` (`react-hooks/exhaustive-deps`)
+
+`calcRemaining` is a new function on every render. Adding it to the dependency array would restart the interval on every tick; leaving it out relies on a stale closure. The interval also kept firing every 200 ms after the countdown reached zero.
+
+**How it was detected:**
+
+Linting the contract code as-is before adapting it.
+
+**Corrective Action:**
+
+- Only the clock reading (`nowMs`) is state. `remainingMs = max(0, targetEpochMs - (nowMs + serverOffsetMs))` is derived during render, so the effect depends only on `targetEpochMs` and `serverOffsetMs`.
+- The interval is cleared as soon as the drop is live.
+- `visibilitychange` still re-syncs immediately when the tab wakes up.
+
+**Verification:**
+
+- Tests: `does not drift when the background tab skips ticks`, `goes live at zero and stops ticking`, `reflects a new target immediately`.
+- Real browser: all page timers frozen for 20 s with Chrome's lifecycle state `frozen`; the countdown jumped from `01:30` to `01:09` immediately after resume. Evidence: `evidence/hw3-pubg-arena/02-zero-drift-after-freeze.png`.
+
+**Lesson Learned:**
+
+Reference code is a starting point, not a specification of quality. Run the same lint and tests on it as on your own code.
+
+---
+
+### Issue 12 – Wrapped Headings Overlapped (Template Line-Height)
+
+**Category:** Accessibility / Responsive (WCAG 1.4.10 Reflow)
+
+**Introduced in:** initial Vite template · **Fixed in:** `e4f1c05`
+
+**Problem:**
+
+At 375 px the HW3 heading "PUBG Vietnam Airdrop Arena" wrapped onto two lines that overlapped. `src/index.css` sets `font: 18px/145%` on `:root`. A percentage line-height is computed once (about 26 px) and inherited as a fixed length, so a 36 px `h1` got a 26 px line box. Every homework was affected whenever its title wrapped.
+
+**How it was detected:**
+
+Reviewing a real-browser screenshot at 375 px. Lighthouse (100) and axe-core (0 violations) did not report it, because overlapping text is not an automated rule.
+
+**Corrective Action:**
+
+Unitless `line-height: 1.15` on `h1`, which scales with the heading's own font size.
+
+**Verification:**
+
+Measured in Chrome for all three homeworks at 320 px and 375 px: `h1` line-height 41.4 px for a 36 px font (no overlap), page `scrollWidth` equal to the viewport. Evidence: `evidence/hw3-pubg-arena/09-mobile-375px.png`.
+
+**Lesson Learned:**
+
+Look at the screenshots. A perfect automated score does not mean the page is readable.
+
+---
+
+### Issue 13 – Ambiguous Test Query After Adding Landmarks
+
+**Category:** Testing
+
+**Found in:** `318ec1d` (fixed before commit)
+
+**Problem:**
+
+The AI-written page test looked up the kill feed with `getByRole('region', { name: /kill feed/i })`. The page wraps the feed in a `<section aria-labelledby>` titled "Kill feed", which is also a `region` landmark, so the query matched two elements and the test failed with "Found multiple elements".
+
+**How it was detected:**
+
+Running the test suite.
+
+**Corrective Action:**
+
+Query the scroll container by its exact accessible name, `'Kill feed, newest first'`. The section and the scroller keep distinct names, so assistive technology can tell them apart.
+
+**Verification:**
+
+`KraftonPubgVnArena.test.jsx` passes (209/209 at that commit).
+
+**Lesson Learned:**
+
+Loose regex queries in tests become ambiguous as the page grows. Match accessible names exactly when several landmarks share a word.
+
+---
+
+## 9. HW3 Verification Summary
+
+| Requirement | Evidence |
+|---|---|
+| Zero-drift `usePubgAirdropTimer` with `visibilitychange` resync | `usePubgAirdropTimer.test.jsx`, `02-zero-drift-after-freeze.png` |
+| Drop phases `WARMUP` / `AIRDROP_LIVE` / `LOOTED_OUT` / `EXPIRED` | `arenaData.test.js`, `CrateCard.test.jsx` |
+| Prices with `Intl.NumberFormat('vi-VN')` | `arenaData.test.js` (`1.250.000 ₫`) |
+| In-flight `claimId` lock (no double claim) | `useOptimisticClaim.test.jsx` |
+| Optimistic decrement, 409 rollback | `useOptimisticClaim.test.jsx`, `03-…`, `04-…`, `05-409-conflict-rollback.png` |
+| Idempotent, abortable claim API | `mockClaimServer.test.js` |
+| Leaderboard: WWCD / placement / kill sort, search keeps rank | `leaderboard.test.js`, `SquadLeaderboard.test.jsx`, `06-…`, `07-…` |
+| Virtualized, filterable kill feed | `killFeed.test.js`, `KillFeed.test.jsx`, `08-kill-feed-virtualized-filtered.png` |
+| WCAG 2.2 AA, 375 px | `KraftonPubgVnArena.a11y.test.jsx`, `09-mobile-375px.png`, `10-lighthouse-accessibility.png` |
+
+**Automated result:** 209/209 tests passed, ESLint passed, production build passed.
+
+### Evidence (`evidence/hw3-pubg-arena/`)
+
+| Screenshot | What it shows |
+|---|---|
+| `01-desktop-overview.png` | Airdrops, leaderboard and kill feed |
+| `02-zero-drift-after-freeze.png` | Timers frozen 20 s, countdown `01:30` → `01:09` right after resume |
+| `03-optimistic-claim-pending.png` | Stock 5 → 4 immediately, button "Claiming…" |
+| `04-claim-confirmed.png` | Server confirmed: "Claimed PVS Finals VIP Pass + 5,000 G-Coin!" |
+| `05-409-conflict-rollback.png` | Rivals looted the server stock; optimistic 4 → 3, then 409: "Looted out", stock 0, "Your claim was rolled back." |
+| `06-leaderboard-sorted-by-kills.png` | Sorted by kill points, sorted column marked with ▼ and `aria-sort` |
+| `07-leaderboard-search-keeps-rank.png` | Search "roy": 1 of 4 squads, still rank #3 |
+| `08-kill-feed-virtualized-filtered.png` | AGG + headshots: 74 of 500 kills, only 12 rows in the DOM, first rendered row #24 of 74 |
+| `09-mobile-375px.png` | 375 px viewport, page width 375 px |
+| `10-lighthouse-accessibility.png` | Lighthouse 13.5.0 Accessibility 100 (snapshot mode after opening HW3, no failed audits) |
