@@ -1,0 +1,101 @@
+.leaderboard__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.leaderboard__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  color: #e4e4e7;
+  font-size: 0.9rem;
+}
+
+.leaderboard__field input,
+.leaderboard__field select {
+  min-height: 44px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  color: #fafafa;
+  background: #27272a;
+  font: inherit;
+}
+
+.leaderboard__field input:focus-visible,
+.leaderboard__field select:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.leaderboard__count {
+  display: block;
+  margin: 16px 0 8px;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+}
+
+.leaderboard__scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.leaderboard__scroller:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.leaderboard__table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  color: #f4f4f5;
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard__table caption {
+  padding-block-end: 8px;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  text-align: start;
+}
+
+.leaderboard__table th,
+.leaderboard__table td {
+  padding: 10px 12px;
+  border-block-end: 1px solid #3f3f46;
+  text-align: end;
+}
+
+.leaderboard__table th[scope='row'],
+.leaderboard__table thead th:nth-child(2) {
+  text-align: start;
+}
+
+.leaderboard__table thead th {
+  color: #d4d4d8;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+/* Sorted column: marked by weight and an arrow, not by color alone. */
+.leaderboard__table th[aria-sort] {
+  color: #fbbf24;
+}
+
+.leaderboard__table th[aria-sort]::after {
+  content: ' ▼';
+}
+
+.leaderboard__table tbody tr:first-child th[scope='row'] {
+  color: #fcd34d;
+}
+
+.leaderboard__empty {
+  color: #a1a1aa;
+  text-align: center !important;
+}
