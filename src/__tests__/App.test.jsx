@@ -20,4 +20,14 @@ describe('App homework navigation', () => {
     expect(screen.queryByRole('heading', { name: 'Interactive Drum Kit' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'HW2 · Grand Piano 88' })).toHaveAttribute('aria-pressed', 'true');
   });
+    it('names the current homework in the page title (WCAG 2.4.2)', () => {
+    render(<App />);
+
+    expect(document.title).toBe('HW1 · Drum Kit | Lab 03 · React 19 Studio');
+
+    fireEvent.click(screen.getByRole('button', { name: 'HW2 · Grand Piano 88' }));
+
+    expect(document.title).toBe('HW2 · Grand Piano 88 | Lab 03 · React 19 Studio');
+  });
+
 });

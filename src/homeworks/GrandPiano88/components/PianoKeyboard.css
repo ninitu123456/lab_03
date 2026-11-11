@@ -14,7 +14,9 @@
 .piano-keyboard {
   --white-key-width: 2.25rem;
   --white-key-height: 11rem;
-  --black-key-width: calc(var(--white-key-width) * 0.6);
+  /* WCAG 2.5.8: never narrower than 24px. */
+  --black-key-width: max(24px, calc(var(--white-key-width) * 0.6));
+
 
   position: relative;
   width: calc(52 * var(--white-key-width));

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import DrumMachine from './homeworks/DrumMachine/DrumMachine';
 import GrandPiano88 from './homeworks/GrandPiano88/GrandPiano88';
 
 import './App.css';
+
+const SITE_TITLE = 'Lab 03 · React 19 Studio';
 
 // Only ONE homework is mounted at a time, so their global
 // keyboard listeners (both use KeyW, KeyA, ...) never conflict.
@@ -15,9 +17,15 @@ const HOMEWORKS = [
 function App() {
   const [activeId, setActiveId] = useState(HOMEWORKS[0].id);
 
-  const ActiveHomework = HOMEWORKS.find(
+  const activeHomework = HOMEWORKS.find(
     (homework) => homework.id === activeId,
-  ).Component;
+  );
+  const ActiveHomework = activeHomework.Component;
+
+  // WCAG 2.4.2 Page Titled: the tab title names the current homework.
+  useEffect(() => {
+    document.title = `${activeHomework.label} | ${SITE_TITLE}`;
+  }, [activeHomework.label]);
 
   return (
     <>
