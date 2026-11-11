@@ -238,3 +238,52 @@
     font-size: 0.7rem;
   }
 }
+
+
+/* Tablet */
+@media (max-width: 768px) {
+  .drum-machine {
+    padding: 24px 18px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .drum-machine {
+    padding: 20px 14px;
+  }
+
+  .drum-machine__hit-log-header {
+    align-items: flex-start;
+  }
+
+  .decibel-meter {
+    padding: 16px;
+  }
+}
+
+/* Small mobile: 375px and below */
+@media (max-width: 375px) {
+  .drum-machine {
+    padding: 16px 12px;
+  }
+
+  .drum-machine__hit-list li {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 10px 8px;
+  }
+
+  .hit-log__time {
+    font-size: 0.7rem;
+  }
+
+  .decibel-meter__header {
+    gap: 8px;
+  }
+
+  .decibel-meter__value {
+    font-size: 0.85rem;
+  }
+}
+
