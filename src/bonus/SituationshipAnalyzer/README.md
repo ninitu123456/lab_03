@@ -22,8 +22,29 @@ ghosting timer without leaks.
 
 ```text
 SituationshipAnalyzer/
-├── model/       State machine and effort scoring (pure functions)
-├── hooks/       Ghosting reply timer
-├── components/  Analyzer UI
+├── model/                     State machine, effort scoring, mock partner
+├── hooks/                     Ghosting reply timer
+├── SituationshipAnalyzer.jsx  Analyzer UI
+├── SituationshipPage.jsx      Page shown in the app navigation
 └── README.md
 ```
+
+## 4. Usage
+
+| Action | Result |
+|---|---|
+| **Ghi nỗ lực của em / của ai đó** | Appends an immutable effort signal; scores and the red flag update instantly. |
+| **Gửi** a message | Waits 5 s for a reply. No reply → the machine moves to "Đã dừng lại". |
+| **Dừng lại** | Leaves the situationship and cancels any pending reply wait. |
+| **Xác nhận yêu thật** / **Làm lại từ đầu** | Only the transitions that are legal in the current phase are shown. |
+
+## 5. Verification
+
+```bash
+npm run test -- --run
+npm run lint
+npm run build
+```
+
+- Evidence: `evidence/bonus-situationship/` (red flag, timeout, reply, "Dừng lại" cleanup with timer counts, 375 px, Lighthouse 100).
+- AI issues: `AI_FAILURE_AUDIT.md`, Issues 14–16.

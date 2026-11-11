@@ -554,3 +554,126 @@ Loose regex queries in tests become ambiguous as the page grows. Match accessibl
 | `08-kill-feed-virtualized-filtered.png` | AGG + headshots: 74 of 500 kills, only 12 rows in the DOM, first rendered row #24 of 74 |
 | `09-mobile-375px.png` | 375 px viewport, page width 375 px |
 | `10-lighthouse-accessibility.png` | Lighthouse 13.5.0 Accessibility 100 (snapshot mode after opening HW3, no failed audits) |
+
+---
+
+# Bonus – Situationship Analyzer ("Hẹn Hò Nhưng Không Yêu")
+
+## 10. Identified Issues and Corrective Actions
+
+### Issue 14 – Floating-Point Drift in Effort Scores
+
+**Category:** Correctness / Derived State
+
+**Found while writing:** `3f7e7d2`
+
+**Problem:**
+
+"Em cố trăm lần" is 100 separate signals of weight 0.1. Adding them one by one in JavaScript gives `9.99999999999998`, not `10` (verified with Node). A red-flag rule that compares scores could flip at exact thresholds because of this error.
+
+**Corrective Action:**
+
+Each signal's impact and every total are rounded to two decimals (`Math.round(value * 100) / 100`).
+
+**Verification:**
+
+Test `"Em cố trăm lần" (100 x 0.1) is less than "ai đó một phần" (1 x 50)` uses 100 separate one-step signals and expects exactly `emScore: 10`.
+
+**Lesson Learned:**
+
+Never compare sums of decimal fractions without rounding. Test with many small inputs, not one large one.
+
+---
+
+### Issue 15 – Reference Ghosting Effect Ignored "Sending a Message"
+
+**Category:** Requirements Compliance / Effects
+
+**Found while writing:** `b722178`
+
+**Problem:**
+
+The spec says *"Sending a message starts a 5s reply timer"*. The reference component instead runs:
+
+```js
+useEffect(() => {
+  if (phase !== 'DATING_NO_LOVE') return undefined;
+  const timerId = window.setTimeout(() => setPhase('GHOSTED_EXIT'), 5000);
+  return () => window.clearTimeout(timerId);
+}, [phase, myTries]);
+```
+
+The user is ghosted 5 s after the page opens even if no message was ever sent, and the 5 s window restarts on every effort change (`myTries`). It also has no reply promise to abort.
+
+**How it was detected:**
+
+Comparing the reference code against the written requirement before reusing it.
+
+**Corrective Action:**
+
+`useGhostingTimer` runs only while a message is pending. One `AbortController` per message cancels both the partner's reply promise and the timeout. Leaving `DATING_NO_LOVE`, pressing "Dừng lại", sending a new message or unmounting aborts everything. Callbacks are read from a ref, so re-renders do not restart the window.
+
+**Verification:**
+
+- Tests: `does nothing without a pending message`, `a new message restarts the 5 s window`, `does not restart the timer when only the callbacks change`, `"Dừng lại" (message cleared) aborts the wait and the timeout`.
+- Real browser with a timer counter: pending timers `1 → 0` after "Dừng lại". Evidence: `evidence/bonus-situationship/06-dung-lai-cleanup.png`.
+
+**Lesson Learned:**
+
+Reference code can contradict its own specification. Check the effect's trigger and dependencies against what the user actually does.
+
+---
+
+### Issue 16 – Two Unnamed Live Regions
+
+**Category:** Accessibility / Testing
+
+**Found in:** `d7188fb` (fixed before commit)
+
+**Problem:**
+
+The red-flag verdict and the chat status were both `<output>` elements. `<output>` has the implicit role `status`, so the page had two unnamed status regions. Screen reader users could not tell which one was speaking, and the test `getByRole('status')` failed with "Found multiple elements".
+
+**Corrective Action:**
+
+Each live region has its own accessible name: `aria-label="Cảnh báo red-flag"` and `aria-label="Trạng thái tin nhắn"`. Tests query them by name.
+
+**Verification:**
+
+`SituationshipAnalyzer.test.jsx` (11 tests) and axe-core (0 violations, including best practices).
+
+**Lesson Learned:**
+
+When a page has more than one live region, name each one.
+
+---
+
+Note: the contract lists two different weight pairs (`0.05 / 100` in the `EffortSignal` comment, `0.1 / 50` in the reference component). The implementation follows the reference component (`0.1 / 50`).
+
+## 11. Bonus Verification Summary
+
+| Requirement | Evidence |
+|---|---|
+| FSM instead of boolean soup (4 phases, transition table) | `relationshipMachine.test.js`, `06-dung-lai-cleanup.png` (only legal next step offered) |
+| Immutable effort log `[...prev, signal]` with `crypto.randomUUID()` | `effortSignals.test.js` |
+| Pure derived scores and red flag (no `useEffect`) | `effortSignals.test.js`, `02-red-flag-derived.png`, `03-balanced-effort-stable.png` |
+| 5 s "seen không rep" timer, AbortController cleanup | `useGhostingTimer.test.jsx`, `04-…`, `05-…`, `06-…` |
+| `useId()` labels, `<output role="status" aria-live="polite">` | `SituationshipAnalyzer.test.jsx`, `SituationshipPage.test.jsx` (axe) |
+| 375 px, Lighthouse | `07-mobile-375px.png`, `08-lighthouse-accessibility.png` |
+
+**Automated result:** 246/246 tests passed, ESLint passed, production build passed.
+
+### Evidence (`evidence/bonus-situationship/`)
+
+The mock partner uses `Math.random`; the capture fixed it to `0.99` (never replies) or `0` (replies after 2 s) so the screenshots are reproducible.
+
+| Screenshot | What it shows |
+|---|---|
+| `01-desktop-overview.png` | Analyzer in `DATING_NO_LOVE` |
+| `02-red-flag-derived.png` | 100 tries × 0.1 = 10 vs 1 part × 50 = 50: "[RED-FLAG] Hẹn hò nhưng không yêu …" |
+| `03-balanced-effort-stable.png` | Em 1000 × 0.1 = 100 > 50: "[OK] Stable" |
+| `04-seen-no-reply-timeout.png` | No reply for 5 s: phase "Đã dừng lại", pending timers 0 |
+| `05-reply-in-time.png` | Reply after 2 s: phase unchanged, timeout cancelled, pending timers 0 |
+| `06-dung-lai-cleanup.png` | "Dừng lại" while waiting: pending timers 1 → 0, only "Làm lại từ đầu" offered |
+| `07-mobile-375px.png` | 375 px viewport, page width 375 px |
+| `08-lighthouse-accessibility.png` | Lighthouse 13.5.0 Accessibility 100 (snapshot mode, no failed audits) |

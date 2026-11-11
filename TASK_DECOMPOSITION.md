@@ -132,6 +132,18 @@ performance optimization and asynchronous systems.
 | 11 | WCAG fixes (heading line-height) and axe audit |
 | 12 | HW3 evidence and AI failure audit |
 
+## 3d. Bonus Git Commit Mapping
+
+| Commit | Task |
+|---|---|
+| 01 | Scaffold Situationship Analyzer |
+| 02 | `feat(fsm): model HenHoKhongYeu state machine` |
+| 03 | Immutable effort signals and derived red-flag scoring |
+| 04 | Abortable "seen, no reply" ghosting timer |
+| 05 | `feat(ui): add derived red-flag meter & ghosting cleanup` |
+| 06 | Navigation entry and axe audit |
+| 07 | Bonus evidence and AI failure audit |
+
 ## 4. Definition of Done
 
 A task is complete only when:
