@@ -7,7 +7,7 @@ import { useDrumKeyboard } from './hooks/useDrumKeyboard';
 import DrumPadGrid from './components/DrumPadGrid';
 
 import './DrumMachine.css';
-
+import DecibelMeter from './components/DecibelMeter';
 function DrumMachine() {
   const [audioEngine] = useState(
     () => new DrumAudioEngine(),
@@ -128,6 +128,8 @@ function DrumMachine() {
           onTrigger={handleTriggerPad}
         />
 
+        <DecibelMeter audioEngine={audioEngine} />
+        
         <p className="drum-machine__instruction">
           Press W, A, S, D, J, K, L or click a pad to play.
           Use Tab to navigate between pads.
